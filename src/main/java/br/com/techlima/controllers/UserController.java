@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.techlima.entities.User;
+import br.com.techlima.dto.UserDto;
 import br.com.techlima.services.UserService;
 
 @RestController
@@ -24,19 +24,19 @@ public class UserController {
 	private UserService userService = new UserService();
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<User> findAll(){
+	public List<UserDto> findAll(){
 		return userService.findAll();
 	}
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public User findById(@PathVariable(value = "id") Long id) {
+	public UserDto findById(@PathVariable(value = "id") Long id) {
 		return userService.findByid(id);
 	}
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public User createUser(@RequestBody User user) {
+	public UserDto createUser(@RequestBody UserDto user) {
 		return userService.createPerson(user);
 	}
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public User updatePerson(@RequestBody User user) {
+	public UserDto updatePerson(@RequestBody UserDto user) {
 		return userService.updateUser(user);
 	}
 	@DeleteMapping(value = "/{id}")
