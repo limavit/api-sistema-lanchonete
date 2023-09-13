@@ -11,15 +11,21 @@ import br.com.techlima.dto.UserDto;
 import br.com.techlima.entities.User;
 import br.com.techlima.exceptions.ResourceNotFoundException;
 import br.com.techlima.mapper.UserMapper;
+import br.com.techlima.repositories.AddressRepository;
 import br.com.techlima.repositories.UserRepository;
+import br.com.techlima.utils.Validations;
 
 @Service
 public class UserService {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
+	AddressRepository addressRepository;
+	@Autowired
 	UserMapper userMapper;
 	private Logger logger = Logger.getLogger(UserService.class.getName());
+
+	Validations valida = new Validations();
 
 	public List<UserDto> findAll() {
 		logger.info("Listando todos os usuários");
@@ -35,6 +41,12 @@ public class UserService {
 	}
 
 	public UserDto createPerson(UserDto userDto) {
+		
+
+		if (validaAddress(userDto.getIdAddress())) {
+			logger.info("Não foi possivel criar usuário por falta de FK t_address");
+			new ResourceNotFoundException("id do Endereço do Usuário não encontrado na tabela de endereços");
+		}
 		logger.info("Criando usuário");
 		User user = userMapper.toUser(userDto);
 		return userMapper.toUserDto(userRepository.save(user));
@@ -58,6 +70,10 @@ public class UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("Sem registros para listar com este ID"));
 		userRepository.delete(entity);
 		logger.info("Usuário excluído com sucesso");
+	}
+
+	private boolean validaAddress(Long idAddress) {
+		return addressRepository.findById(idAddress).isEmpty();
 	}
 
 }
