@@ -5,8 +5,12 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 
+import br.com.techlima.controllers.AddressController;
+import br.com.techlima.controllers.UserController;
 import br.com.techlima.dto.AddressDto;
 import br.com.techlima.entities.Address;
 import br.com.techlima.exceptions.ResourceNotFoundException;
@@ -24,18 +28,24 @@ public class AddressService {
 	public List<AddressDto> findAll() {
 		logger.info("Listando todos os endereços.");
 		List<Address> lista = addressRepository.findAll();
-		return lista.stream().map((address) -> AddressMapper.MAPPER.toAddressDto(address)).collect(Collectors.toList());
+		var addressDto =  lista.stream().map((address) -> AddressMapper.MAPPER.toAddressDto(address)).collect(Collectors.toList());
+		addressDto.stream().forEach(l -> l.add(linkTo(methodOn(AddressController.class).getAddress(l.getKey())).withSelfRel()));
+		return addressDto;
 	}
 	
 	public AddressDto findById(Long id) {
 		logger.info("Retornando Address de Id: " + id);
-		return addressMapper.toAddressDto(addressRepository.findById(id)
+		var addresDto = addressMapper.toAddressDto(addressRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Sem endereços para listar")));
+		addresDto.add(linkTo(methodOn(AddressController.class).getAddress(addresDto.getKey())).withSelfRel());
+		return addresDto;
 	}
 	public AddressDto createAddress(AddressDto addressDto) {
-		logger.info("Criando usuaário");
+		logger.info("Criando endereco");
 		Address address = addressMapper.toAddress(addressDto);
-		return addressMapper.toAddressDto(addressRepository.save(address));
+		var dto = addressMapper.toAddressDto(addressRepository.save(address));
+		dto.add(linkTo(methodOn(AddressController.class).getAddress(dto.getKey())).withSelfRel());
+		return dto;
 	}
 	public AddressDto updateAddress(AddressDto addressDto) {
 		var obj = addressRepository.findById(addressDto.getKey())
@@ -47,6 +57,7 @@ public class AddressService {
 		obj.setCep(addressDto.getCep());
 		var dto = addressMapper.toAddressDto(obj);
 		logger.info("Endereço atualizado com sucesso");
+		dto.add(linkTo(methodOn(AddressController.class).getAddress(dto.getKey())).withSelfRel());
 		return dto;
 	}
 	public void deleteAddress(Long id) {

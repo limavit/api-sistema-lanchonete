@@ -1,9 +1,13 @@
 package br.com.techlima.dto;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class AddressDto {
+import org.springframework.hateoas.RepresentationModel;
+
+public class AddressDto extends RepresentationModel<AddressDto> implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
 	private Long key;
 	private String street;
 	private int number;

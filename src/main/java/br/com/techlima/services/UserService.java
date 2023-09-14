@@ -43,7 +43,7 @@ public class UserService {
 		logger.info("Listando usuário de id: " + id);
 		UserDto dto = userMapper.toUserDto(userRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Sem registros para listar com este ID")));		
-		dto.add(linkTo(methodOn(UserController.class).findById(id)).withSelfRel());
+		dto.add(linkTo(methodOn(UserController.class).findById(dto.getKey())).withSelfRel());
 		return dto;
 	}
 
@@ -56,7 +56,10 @@ public class UserService {
 		}
 		logger.info("Criando usuário");
 		User user = userMapper.toUser(userDto);
-		return userMapper.toUserDto(userRepository.save(user));
+		var dto = userMapper.toUserDto(userRepository.save(user));
+		dto.add(linkTo(methodOn(UserController.class).findById(dto.getKey())).withSelfRel());
+		return dto;
+		
 	}
 
 	public UserDto updateUser(UserDto userDto) {
@@ -68,6 +71,7 @@ public class UserService {
 		obj.setDocument(userDto.getDocument());
 		var dto = userMapper.toUserDto(userRepository.save(obj));
 		logger.info("Usuário atualizado com sucesso");
+		dto.add(linkTo(methodOn(UserController.class).findById(dto.getKey())).withSelfRel());
 		return dto;
 
 	}
