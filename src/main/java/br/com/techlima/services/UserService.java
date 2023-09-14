@@ -5,8 +5,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 
+import br.com.techlima.controllers.UserController;
 import br.com.techlima.dto.UserDto;
 import br.com.techlima.entities.User;
 import br.com.techlima.exceptions.ResourceNotFoundException;
@@ -30,14 +33,18 @@ public class UserService {
 	public List<UserDto> findAll() {
 		logger.info("Listando todos os usuários");
 		List<User> users = userRepository.findAll();
-		return users.stream().map((user) -> UserMapper.MAPPER.toUserDto(user)).collect(Collectors.toList());
+		var usersDto = users.stream().map((user) -> UserMapper.MAPPER.toUserDto(user)).collect(Collectors.toList());
+		usersDto.stream().forEach(u -> u.add(linkTo(methodOn(UserController.class).findById(u.getKey())).withSelfRel()));
+		return usersDto;
 
 	}
 
 	public UserDto findByid(Long id) {
 		logger.info("Listando usuário de id: " + id);
-		return userMapper.toUserDto(userRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Sem registros para listar com este ID")));
+		UserDto dto = userMapper.toUserDto(userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Sem registros para listar com este ID")));		
+		dto.add(linkTo(methodOn(UserController.class).findById(id)).withSelfRel());
+		return dto;
 	}
 
 	public UserDto createPerson(UserDto userDto) {
@@ -53,7 +60,7 @@ public class UserService {
 	}
 
 	public UserDto updateUser(UserDto userDto) {
-		var obj = userRepository.findById(userDto.getId())
+		var obj = userRepository.findById(userDto.getKey())
 				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 		obj.setFirstName(userDto.getFirstName());
 		obj.setLastName(userDto.getLastName());

@@ -38,7 +38,7 @@ public class AddressService {
 		return addressMapper.toAddressDto(addressRepository.save(address));
 	}
 	public AddressDto updateAddress(AddressDto addressDto) {
-		var obj = addressRepository.findById(addressDto.getId())
+		var obj = addressRepository.findById(addressDto.getKey())
 				.orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado"));
 		obj.setStreet(addressDto.getStreet());
 		obj.setNumber(addressDto.getNumber());

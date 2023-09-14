@@ -1,8 +1,10 @@
 package br.com.techlima.dto;
 
+import java.util.Objects;
+
 public class AddressDto {
 	
-	private Long id;
+	private Long key;
 	private String street;
 	private int number;
 	private String city;
@@ -11,12 +13,15 @@ public class AddressDto {
 	public AddressDto() {
 		
 	}
-	public Long getId() {
-		return id;
+	
+	public Long getKey() {
+		return key;
 	}
-	public void setId(Long id) {
-		this.id = id;
+
+	public void setKey(Long key) {
+		this.key = key;
 	}
+
 	public String getStreet() {
 		return street;
 	}
@@ -47,5 +52,24 @@ public class AddressDto {
 	public void setNumber(int number) {
 		this.number = number;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(cep, city, key, number, street, uf);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AddressDto other = (AddressDto) obj;
+		return Objects.equals(cep, other.cep) && Objects.equals(city, other.city) && Objects.equals(key, other.key)
+				&& number == other.number && Objects.equals(street, other.street) && Objects.equals(uf, other.uf);
+	}
+	
 	
 }
