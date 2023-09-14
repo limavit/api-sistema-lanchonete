@@ -1,16 +1,16 @@
 package br.com.techlima.services;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 
 import br.com.techlima.controllers.AddressController;
-import br.com.techlima.controllers.UserController;
 import br.com.techlima.dto.AddressDto;
 import br.com.techlima.entities.Address;
 import br.com.techlima.exceptions.ResourceNotFoundException;
